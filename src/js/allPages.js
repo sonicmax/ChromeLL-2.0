@@ -868,17 +868,23 @@ var getCustomColors = function() {
 };
 
 var addPopupCSS = function() {
-	var styleSheet = document.styleSheets[0];
 	var customColors = getCustomColors();
-	// Dynamically create rules for user info popup using ETI colour scheme (to make sure that content is readable)
-	styleSheet.addRule('#user-popup-div',  'color: ' + customColors.text);			
-	styleSheet.addRule('#user-popup-div',  'background: ' + customColors.message);
-	styleSheet.addRule('#user-popup-div',  'border-color: ' + customColors.body);		
-	styleSheet.addRule('.popup_link', 'color: ' + customColors.anchor);
-	styleSheet.addRule('.popup_link', 'background: ' + customColors.userbar);
-	styleSheet.addRule('#username, #popup_uid, #namechange, #online, #punish, #popup_loading, #rep, #rep a', 'color: ' + customColors.text);
+	
+	var sheet = document.createElement('style');
+	var rules = [];
+	
+	rules.push('#user-popup-div' + ' { ' + 'color: ' + customColors.text + ' }' + '\n');
+	rules.push('#user-popup-div' + ' { ' + 'background: ' + customColors.message + ' }' + '\n');
+	rules.push('#user-popup-div' + ' { ' + 'border-color: ' + customColors.body + ' }' + '\n');
+	rules.push('.popup_link' + ' { ' + 'color: ' + customColors.anchor + ' }' + '\n');
+	rules.push('.popup_link' + ' { ' + 'background: ' + customColors.userbar + ' }' + '\n');
+	rules.push('#username, #popup_uid, #namechange, #online, #punish, #popup_loading, #rep, #rep a' + ' { ' + 'color: ' + customColors.text + ' }' + '\n');
 	// #user-popup-div:before should be same colour as #user-popup-div background
-	styleSheet.addRule('#user-popup-div:before', 'border-bottom-color: ' + customColors.body);	
+	rules.push('#user-popup-div:before' + ' { ' + 'border-bottom-color: ' + customColors.body + ' }' + '\n');
 	// #user-popup-div:after should be same colour as #user-popup-div border
-	styleSheet.addRule('#user-popup-div:after', 'border-bottom-color: ' +   customColors.infobar);
+	rules.push('#user-popup-div:after' + ' { ' + 'border-bottom-color: ' +   customColors.infobar + ' }' + '\n');
+	
+	sheet.innerHTML = rules.join('\n');
+	
+	document.head.appendChild(sheet);	
 };
