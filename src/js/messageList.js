@@ -3690,7 +3690,12 @@ var messageList = {
 		
 		// Modify existing margin-top value (-39px) of pascal so that it appears above ticker
 		var offset = -39 - document.getElementById('dramalinks_ticker').getBoundingClientRect().height;
-		document.styleSheets[0].insertRule("img[src='//static.endoftheinter.net/pascal.png'] { margin-top: " + offset + "px !important; }", 1);		
+		
+		var sheet = document.createElement('style');
+		var selector = 'img[src="//static.endoftheinter.net/pascal.png"]';		
+		var rule = "margin-top: " + offset + "px !important";	
+		sheet.innerHTML = selector + ' { ' + rule + ' }';
+		document.head.appendChild(sheet);
 	},
 	
 	/**
