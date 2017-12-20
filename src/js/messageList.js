@@ -3749,11 +3749,7 @@ var messageList = {
 
 			document.body.classList.add(christmasClassName);	
 			
-			// Fill gaps between message-list divs (to prevent annoying visual effect 
-			// where snow can be seen in the gaps between other elements as it floats down screen)
-			
-			var styleSheet = document.styleSheets[0];
-			
+			// We need to add some extra styling to prevent snow from being visible in gaps between elements
 			var backgroundColor = window.getComputedStyle(document.body).getPropertyValue('background-color');
 			document.getElementById('u0_1').style.backgroundColor = backgroundColor;
 			
@@ -3761,14 +3757,23 @@ var messageList = {
 			document.getElementsByClassName('message-top')[0].style.marginTop = 0;
 			document.getElementsByClassName('message-top')[0].style.borderTop = '1px solid ' + backgroundColor;					
 			
-			styleSheet.addRule('div.userbar, div.infobar, #u0_2', 'margin: 0px !important');
-			styleSheet.addRule('div.userbar', 'border: 1px solid ' + backgroundColor);
-			styleSheet.addRule('div.userbar', 'border-bottom: 2px solid ' + backgroundColor);									
-			styleSheet.addRule('#u0_2', 'border-bottom: 1px solid ' + backgroundColor);
-			styleSheet.addRule('#u0_3', 'border-top: 2px solid ' + backgroundColor);
-			styleSheet.addRule('#u0_3', 'border-bottom: 1px solid ' + backgroundColor);
-			styleSheet.addRule('#u0_4', 'border-top: 1px solid ' + backgroundColor);
-			styleSheet.addRule('#u0_4', 'border-bottom: 2px solid ' + backgroundColor);
+			var sheet = document.createElement('style');
+			var rules = [];
+			
+			rules.push('div.userbar, div.infobar, #u0_2' + ' {' + 'margin: 0px !important' + '}' + '\n');
+			rules.push('div.userbar' + '{' + 'border: 1px solid ' + backgroundColor + '}' + '\n');
+			rules.push('div.userbar' + '{' + 'border-bottom: 2px solid ' + backgroundColor + '}' + '\n');
+			rules.push('#u0_2' + '{' + 'border-bottom: 1px solid ' + backgroundColor + '}' + '\n');
+			rules.push('#u0_3' + '{' + 'border-top: 2px solid ' + backgroundColor + '}' + '\n');
+			rules.push('#u0_3' + '{' + 'border-bottom: 1px solid ' + backgroundColor + '}' + '\n');
+			rules.push('#u0_4' + '{' + 'border-top: 1px solid ' + backgroundColor + '}' + '\n');
+			rules.push('#u0_4' + '{' + 'border-bottom: 2px solid ' + backgroundColor + '}' + '\n');
+			
+			sheet.innerHTML = rules.join('\n');
+			document.head.appendChild(sheet);
+			
+			// Chrome probably handles this kind of thing automatically, but to be safe we should remove
+			// the animation class when tab is not visible to prevent potential performance issues
 			
 			document.addEventListener('visibilitychange', () => {
 					if (document.hidden) {
