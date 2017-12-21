@@ -4,11 +4,11 @@ const UPLOAD_SIZE_LIMIT = 4000000; // 4MB
 
 var imgurNotificationId;
 
-function imageTransloader(info, rename) {
-	var url = info.srcUrl;
+function imageTransloader(info, shouldRename) {
+	var url = checkUrl(info.srcUrl);
 	var filename = getFilename(info.srcUrl);
 	
-	if (rename) {
+	if (shouldRename) {
 		var newFilename = handleRename(filename);
 		if (newFilename === false) {
 			return;
@@ -31,11 +31,33 @@ function imageTransloader(info, rename) {
 	});
 }
 
-function getFilename(url) {
-	// Remove query parameters
-	url = url.split('?')[0];
+/**
+ *  Called before transloading to handle some edge cases
+ */
+
+function checkUrl(url) {	
+	// Create temp anchor to simplify process of parsing URL
+	var anchor = document.createElement('a');
+	anchor.href = url;
+
+	// Fix for sites where the actual image URL is located in the query string (eg WaPo)	
+	if (url.split(anchor.protocol).length > 2) {
+		var queryUrl = url.split(anchor.protocol)[2];		
+		if (hasImage(queryUrl)) {
+			return anchor.protocol + queryUrl;
+		}
+	}
 	
+	return url;
+}
+
+function getFilename(url) {	
 	var filename = url.substring(url.lastIndexOf('/') + 1);	
+	
+	// Remove query parameters. Do this after splitting last path segment to handle weird cases
+	// where the query string is the actual file path
+	filename = filename.split('?')[0];
+	filename = filename.split('&')[0];
 	
 	// Make sure that filename isn't empty
 	if (!filename) {
@@ -73,6 +95,10 @@ function getFilename(url) {
 	}
 	
 	return filename;
+}
+
+function hasImage(url) {
+	return /.(gif|jpg|png)/.test(url);
 }
 
 function handleRename(filename) {
