@@ -8,7 +8,7 @@
     "chrome_style": false
   },	
   "minimum_chrome_version": "40.0.0.0",
-  "web_accessible_resources": [ "src/images/lueshi_48.png", "src/images/lueshi_128.png", "src/images/popup.png", "src/images/heart_tiles.png", "src/images/loading.png", "src/js/like.js", "src/js/topicPostTemplate.js", "options.html", "src/json/defaultconfig.json" ],
+  "web_accessible_resources": ["src/images/lueshi_48.png", "src/images/lueshi_128.png", "src/images/popup.png", "src/images/heart_tiles.png", "src/images/loading.png", "src/js/like.js", "src/js/topicPostTemplate.js", "options.html", "src/json/defaultconfig.json", "lib/widgets.js"],
   "icons": {
  	"16": "src/images/ll.png",
  	"48": "src/images/lueshi_48.png",

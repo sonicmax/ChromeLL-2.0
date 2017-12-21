@@ -1240,6 +1240,11 @@ var messageList = {
 					evt.preventDefault();
 					return;				
 
+				case 'embed_tweet':
+					this.twitter.embed(evt.target.parentNode);
+					evt.preventDefault();
+					return;
+
 				case 'emoji_type':
 					this.emojis.switchType(evt);
 					evt.preventDefault();
@@ -1299,12 +1304,17 @@ var messageList = {
 			else if (evt.target.className && evt.target.classList.contains('nws_imgur')) {
 				this.imgur.debouncerId = setTimeout(this.imgur.showEmbedLink.bind(this.imgur, evt), 400);				
 			}
+			
+			else if (evt.target.className && evt.target.classList.contains('click_embed_tweet')) {
+				this.twitter.debouncerId = setTimeout(this.twitter.showEmbedLink.bind(this.twitter, evt), 400);
+			}
 		},
 		
 		mouseleave: function(evt) {
 			clearTimeout(this.youtube.debouncerId);
 			clearTimeout(this.gfycat.debouncerId);
 			clearTimeout(this.imgur.debouncerId);
+			clearTimeout(this.twitter.debouncerId);
 			
 			clearTimeout(this.menuDebouncer);
 			clearTimeout(this.popupDebouncer);			
@@ -1321,6 +1331,9 @@ var messageList = {
 			}
 			else if (evt.target.classList.contains('nws_imgur')) {
 				this.imgur.hideEmbedLink();
+			}
+			else if (evt.target.classList.contains('click_embed_tweet')) {
+				this.twitter.hideEmbedLink();
 			}
 			
 		},
@@ -1380,6 +1393,9 @@ var messageList = {
 				else if (link.classList.contains('imgur')) {
 					messageList.imgur.checkLink(link);
 					messageList.replaceQuoteOnclick(link.parentNode);
+				}
+				else if (link.classList.contains('twitter')) {
+					messageList.twitter.checkLink(link);					
 				}
 				else if (link.classList.contains('ignore')) {
 					linksToIgnore.push(link);
@@ -2183,6 +2199,130 @@ var messageList = {
 		}	
 	},
 	
+	twitter: {
+		debouncerId: 0,
+		
+		/**
+		 *  Injects the Twitter for Websites script, required to display formatted tweets.
+		 *  (if this fails for whatever reason, ChromeLL will still display a basic embedded tweet)
+		 */
+		
+		injectWidgets: function() {
+			var script = document.createElement('script');			
+			script.src = chrome.extension.getURL('/lib/widgets.js');
+			script.onload = function() {
+					// Remove script element after loading
+					this.remove();
+			};
+			document.head.appendChild(script);		
+		},
+		
+		/**
+		 *  We need to call twttr.widgets.load() to finish the embedding process, 
+		 *  but we can't access window.twttr from ChromeLL. Similarly, we can't
+		 *  add widgets.js as a content script because it relies on access to 
+		 *  other window variables that are injected to the page (like window.__twttrll)
+		 *
+		 *  The solution is to inject the loading code into the page as a script element.
+		 */
+		
+		injectLoadScript: function(id) {
+			var script = document.createElement('script');
+			script.innerHTML = 'twttr.widgets.load(document.getElementById("' + id + '"));';
+			script.onload = function() {
+					this.remove();
+			};
+			document.head.appendChild(script);
+		},
+		
+		showEmbedLink: function(evt) {
+			var target = evt.target;
+			var span = document.createElement('span');
+			span.id = target.id;
+			span.className = 'embed_tweet';
+			span.style.backgroundColor = window.getComputedStyle(document.getElementsByClassName('message')[0]).backgroundColor;
+			span.style.display = 'inline';
+			span.style.position = 'absolute';
+			span.style.zIndex = 1;
+			span.style.fontWeight = 'bold';
+			span.style.textDecoration = 'underline';
+			span.style.cursor = 'pointer';			
+			span.innerHTML = '&nbsp[Embed]';
+			
+			target.appendChild(span);
+		},
+		
+		hideEmbedLink: function() {
+			if (document.getElementsByClassName('embed_tweet').length > 0) {
+				var embedLink = document.getElementsByClassName('embed_tweet')[0];
+				embedLink.parentNode.removeChild(embedLink);
+			}
+		},		
+		
+		checkLink: function(link) {
+			if (!link.classList.contains('checked')) {
+
+				if (link.classList.contains('click_embed_tweet')) {
+					link.addEventListener('mouseenter', messageList.handleEvent.mouseenter.bind(messageList));
+					link.addEventListener('mouseleave', messageList.handleEvent.mouseleave.bind(messageList));
+				}
+				
+				else {
+					this.embed(link);			
+				}
+				
+				link.classList.add('checked');					
+			}
+		},
+		
+		postContainsNsfw: function(link) {
+			if (link.parentNode.className === 'spoiler_on_open') {
+				// We have to go deeper
+				return /(n(\s*?)[wl](\s*?)s)/i.test(link.parentNode.parentNode.parentNode.innerHTML);
+			}
+			else {
+				return /(n(\s*?)[wl](\s*?)s)/i.test(link.parentNode.innerHTML);
+			}
+		},
+		
+		checkHideMedia: function(link) {
+			return (this.postContainsNsfw(link) || messageList.config.hide_tweet_media);			
+		},
+		
+		getEmbedUrl: function(link) {
+			return 'https://publish.twitter.com/oembed?url=' + encodeURIComponent(link.href) 
+					+ '&omit_script=true'
+					+ '&theme=' + ((messageList.config.dark_tweets) ? 'dark' : 'light')
+					+ '&hide_media=' + ((this.checkHideMedia(link)) ? 'true' : 'false')
+		},
+		
+		embed: function(link) {	
+				
+			fetch(this.getEmbedUrl(link))
+			
+					.then(response => {
+						
+						return response.json();
+						
+					}).then(data => {
+						
+						// Insert HTML from API to new element and insert before original
+						var tweet = document.createElement('div');
+						tweet.className = 'embedded_tweet';
+						tweet.innerHTML = data.html;
+						tweet.id = link.id;
+						link.parentNode.insertBefore(tweet, link);
+						
+						// Revert class names and hide original element
+						link.className = 'l';
+						link.style.display = 'none';
+						
+						// Inject loading script so Twitter for Websites can do its thing
+						this.injectLoadScript(tweet.id);
+					});
+		}
+	},
+	
 	youtube: {
 		debouncerId: '', // Stores setTimeout() id for embed link
 		
@@ -2787,13 +2927,14 @@ var messageList = {
 	},
 	
 	links: {
-		youtubeIndex: 0, // See https://github.com/sonicmax/ChromeLL-2.0/issues/80
+		uniqueIndex: 0, // See https://github.com/sonicmax/ChromeLL-2.0/issues/80
 		
 		/**
 		 *  Iterates over any posted links in topic so we can check for media that should be embedded
 		 */
 	
 		check: function(msg) {
+			var dupeCheck = {};
 			var mediaToEmbed = false;
 			var target = msg || document;						
 			
@@ -2816,8 +2957,8 @@ var messageList = {
 					link.className = 'youtube';
 					
 					// give each video link a unique id for embed/hide functions
-					link.id = link.href + '&' + this.youtubeIndex;
-					this.youtubeIndex++;
+					link.id = link.href + '&' + this.uniqueIndex;
+					this.uniqueIndex++;
 					
 					link.addEventListener('mouseenter', messageList.handleEvent.mouseenter.bind(messageList));
 					link.addEventListener('mouseleave', messageList.handleEvent.mouseleave.bind(messageList));
@@ -2843,7 +2984,31 @@ var messageList = {
 					if (messageList.config.embed_gfycat_thumbs || link.parentNode.className == 'quoted-message') {
 						link.setAttribute('name', 'imgur_thumb');
 					}					
+				}
+				
+				else if (messageList.config.embed_tweets && link.title.indexOf('twitter.com/') > -1 && link.title.indexOf('status') > -1) {
 					
+					if (!dupeCheck[link.title]) {
+						
+						link.classList.add('media', 'twitter');
+						mediaToEmbed = true;
+						
+						link.id = link.href + '&' + this.uniqueIndex;
+						this.uniqueIndex++;	
+
+						if (messageList.config.twit_on_click || link.parentNode.className == 'quoted-message') {
+							link.classList.add('click_embed_tweet');
+						}
+					
+						dupeCheck[link.title] = true;
+					}
+					
+					else {
+						// If individual element has not been checked but tweet has already been embedded,
+						// we shouldn't embed automatically (but allow user to manually embed if desired)
+						// This prevents bad UX when people post the same link multiple times						
+						link.classList.add('click_embed_tweet');
+					}
 				}			
 				
 			}
@@ -3811,6 +3976,12 @@ var messageList = {
 	 */
 	
 	applyDomModifications: function(pm) {
+		this.scrapeTags();
+		
+		if (this.config.embed_tweets) {
+			this.twitter.injectWidgets();
+		}
+		
 		if (this.config.dramalinks && !this.config.hide_dramalinks_topiclist) {
 			this.appendDramalinksTicker();
 		}
@@ -3820,8 +3991,6 @@ var messageList = {
 				this.infobarMethods[i]();
 			}
 		}
-		
-		this.scrapeTags();
 		
 		// Check whether user can post in topic
 		var topicOpen = (document.getElementsByClassName('quickpost').length > 0);
