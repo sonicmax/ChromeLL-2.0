@@ -2254,7 +2254,7 @@ var messageList = {
 		},
 		
 		checkHideMedia: function(link) {
-			return (this.postContainsNsfw(link) || messageList.config.hide_tweet_media);			
+			return messageList.config.hide_tweet_media || (messageList.config.hide_nws_tweets && this.postContainsNsfw(link));
 		},
 		
 		getEmbedUrl: function(link) {
@@ -2954,9 +2954,7 @@ var messageList = {
 					}					
 				}
 				
-				else if (messageList.config.embed_tweets && link.title.indexOf('twitter.com/') > -1 && link.title.indexOf('status') > -1) {
-					
-					if (!dupeCheck[link.title]) {
+				else if (messageList.config.embed_tweets && link.href.indexOf('twitter.com/') > -1 && link.href.indexOf('status') > -1) {
 						
 						link.classList.add('media', 'twitter');
 						mediaToEmbed = true;
@@ -2964,19 +2962,13 @@ var messageList = {
 						link.id = link.href + '&' + this.uniqueIndex;
 						this.uniqueIndex++;	
 
-						if (messageList.config.twit_on_click || link.parentNode.className == 'quoted-message') {
+					// Avoid embedding the same tweet multiple times in the same post, and avoid embedding tweets in quoted messages.
+					// The click_embed_tweet class will allow user to manually embed if they desire					
+					if (dupeCheck[link.href] || link.parentNode.className == 'quoted-message') {
 							link.classList.add('click_embed_tweet');
 						}
 					
-						dupeCheck[link.title] = true;
-					}
-					
-					else {
-						// If individual element has not been checked but tweet has already been embedded,
-						// we shouldn't embed automatically (but allow user to manually embed if desired)
-						// This prevents bad UX when people post the same link multiple times						
-						link.classList.add('click_embed_tweet');
-					}
+					dupeCheck[link.href] = true;
 				}			
 				
 			}

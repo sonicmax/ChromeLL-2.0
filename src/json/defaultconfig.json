@@ -57,6 +57,7 @@
 	"embed_imgur":true,
 	"embed_gfycat_thumbs":false,
 	"embed_tweets":true,
+	"hide_nws_tweets":true,
 	"hide_tweet_media": false,
 	"dark_tweets": false,
 	"show_gfycat_link":false,
