@@ -46,7 +46,7 @@ var allPages = {
 				dialog.showModal();
 				
 				// Stop callCommonFunctions() from iterating 
-				this = {};
+				allPages.commonFunctions = {};
 			}
 		},
 		
