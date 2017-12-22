@@ -438,12 +438,12 @@ div.youtube {
 
 .snow {
 	background-image: url('https://i4.dealtwith.it/i/n/f5fada07bef29b1d00bc68ae5d5de98f/s1.png'), url('https://i1.dealtwith.it/i/n/c36b4f7b2444b95fb0e02d1c5dd2706b/s2.png'), url('https://i1.dealtwith.it/i/n/03f8b2fb92f8101dbf30829d025dd193/s3.png') !important;
-	animation: snowfall 40s linear infinite;
+	animation: snowfall 60s linear infinite;
 }
 
 .hup_hup {
 	background-image: url('https://i1.dealtwith.it/i/n/4df72b901539b1ae83a819d5283036c8/pilo1.png'), url('https://i4.dealtwith.it/i/n/31f1d516b8e1d2384a0a82fb75f9ed4b/pilo2.png'), url('https://i1.dealtwith.it/i/n/8b418d46cc313314ae219651002ad77e/pilo3.png') !important;
-	animation: snowfall 40s linear infinite;
+	animation: snowfall 60s linear infinite;
 }
 
 /* first image is 500x500, second is 400x400, third is 300x300. use multiples of this to ensure animation is smooth */
