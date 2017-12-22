@@ -41,7 +41,7 @@ var background = {
 			}
 		}
 		
-		allBg.init_listener(this.config);
+		this.init_listener(this.config);
 		
 		this.messagePassing.addListeners();
 		chrome.notifications.onClicked.addListener(this.makeNotificationOriginActive.bind(this));
@@ -50,6 +50,47 @@ var background = {
 		this.createClipboardElement();	
 		this.getUserID();
 		this.getDrama();
+	},
+	
+	init_listener: function(cfg) {
+		// Chrome || Firefox
+		var webRequest = chrome.webRequest || browser.webRequest;
+		
+		if (webRequest == null) return;
+		
+		// use try...catch statement as options iframe causes problems with webRequest listeners
+		try {
+			if (cfg.force_https) {
+				allBg.activeListeners.force_https = true;
+				webRequest.onBeforeRequest.addListener(
+						allBg.handle_redirect, {
+							"urls" : [ "http://*.endoftheinter.net/*" ]
+						}, [ 'blocking' ]);
+			}
+			if (!cfg.force_https && allBg.activeListeners.force_https) {
+				webRequest.onBeforeRequest
+						.removeListener(allBg.handle_redirect);
+				allBg.activeListeners.force_https = false;
+			}
+
+			if (cfg.drop_batch_uploader) {
+				webRequest.onBeforeSendHeaders.addListener(
+						allBg.handle_batch_uploader, {
+							"urls" : [ "http://u.endoftheinter.net/*",
+									"https://u.endoftheinter.net/*",
+									"https://chairface.org/*" ]
+						}, [ 'blocking', 'requestHeaders' ]);
+				allBg.activeListeners.batch_uploader = true;
+			}
+
+			if (!cfg.batch_uploader && allBg.activeListeners.batch_uploader) {
+				webRequest.onBeforeSendHeaders
+						.removeListener(allBg.handle_batch_uploader);
+				allBg.activeListeners.batch_uploader = false;
+			}
+		} catch (e) {
+			console.log(e);
+		}
 	},
 	
 	getDefaultConfig: function(callback) {
