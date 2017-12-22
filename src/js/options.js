@@ -1454,7 +1454,6 @@ var options = {
 			config.clear_notify = document.getElementById('clear_notify').value;
 			config.last_saved = new Date().getTime();
 			localStorage['ChromeLL-Config'] = JSON.stringify(config);
-			allBg.init_listener(config);	
 	},
 	restoreFromText: function(evt) {
 		var file = evt.target.files[0];
