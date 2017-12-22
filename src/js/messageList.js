@@ -2276,6 +2276,11 @@ var messageList = {
 		},
 		
 		postContainsNsfw: function(link) {
+			if (messageList.tags.includes('NWS') || messageList.tags.includes('NLS')) {
+				return true;
+			}
+			
+			// Check post content for "nws"/"nls" strings
 			if (link.parentNode.className === 'spoiler_on_open') {
 				// We have to go deeper
 				return /(n(\s*?)[wl](\s*?)s)/i.test(link.parentNode.parentNode.parentNode.innerHTML);
