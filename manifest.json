@@ -1,6 +1,6 @@
 {
   "name": "ChromeLL",
-  "version": "2.67",
+  "version": "2.69",
   "manifest_version": 2,
   "description": "Enhancements for the forums at the End of the Internet",
   "options_ui": {
