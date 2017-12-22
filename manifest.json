@@ -21,7 +21,7 @@
   },
 	"omnibox": { "keyword" : "searcheti" },
   "background": {
-    "scripts": ["src/json/vars.json", "src/js/allBg.js", "src/js/transloader.js", "background.js"]
+    "scripts": ["src/js/allBg.js", "src/js/transloader.js", "background.js"]
   },
   "content_scripts": [
   {

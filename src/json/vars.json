@@ -1,6 +1,0 @@
-var boards = {"Misc.":{
-                 "ChromeLL Options":"%extension%options.html"},
-              "Tags":{
-                 "Subscribed":"Subscribed",
-                 "LUE":"LUE"},
-             };
