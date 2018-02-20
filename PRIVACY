@@ -11,7 +11,7 @@ a list of topic creators from recently visited topics. The "Image Map Cache" fea
 to store image data from your Image Map page. ChromeLL also stores your username, bookmarked tags, and the
 list of mod/admin tags from your profile page.
 
-The "Ignorator Cleaner" feature uses the API provided on http://eti-stats.herokuapp.com/ to update usernames
+The "Ignorator Cleaner" feature uses the API provided on https://eti-stats.herokuapp.com/ to update usernames
 and remove banned users from your ignorator list. It does not transmit any personally identifiable information, 
 and must be manually activated from the options page.
 
