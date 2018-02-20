@@ -1,0 +1,15 @@
+==============
+PRIVACY POLICY
+==============
+
+ChromeLL stores some data locally in order to function correctly. This primarily includes your configuration
+settings, and any data you've personally provided to the extension (such as blocked user lists, user notes, etc).
+
+ChromeLL also scrapes some user data from the End of the Internet - this is used strictly within the extension 
+in order to provide certain features. The "Highlight Topic Creator" feature requires the extension to store 
+a list of topic creators from recently visited topics. The "Image Map Cache" feature requires the extension
+to store image data from your Image Map page. ChromeLL also stores your username, bookmarked tags, and the
+list of mod/admin tags from your profile page.
+
+ChromeLL does not transmit any of this data outside of your browser, and does not access any of your data 
+from other websites.
