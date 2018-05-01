@@ -134,5 +134,6 @@
 	"microsoft_sam": true,
 	"seasonal_css": true,
 	"last_clean":0,
-	"last_saved":0
+	"last_saved":0,
+	"quick_edit": true
 }
