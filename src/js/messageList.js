@@ -451,8 +451,9 @@ var messageList = {
 				var divider = document.createTextNode(" | ");
 				anchor.href = '/imagemap.php?' + topicNumber + currentPage;
 				anchor.innerHTML = 'Imagemap';
-				infobar.appendChild(divider);
-				infobar.appendChild(anchor);
+
+                infobar.insertBefore(divider, infobar.lastChild);
+                infobar.insertBefore(anchor, infobar.lastChild);
 			}
 		},
 		
