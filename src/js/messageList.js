@@ -503,10 +503,12 @@ var messageList = {
 				anchor.href = window.location.href.replace(me, '');
 				anchor.innerHTML = 'Unfilter Me';
 			}
-			
-			var infobar = document.getElementsByClassName('infobar')[0];				
-			infobar.appendChild(divider);
-			infobar.appendChild(anchor);
+
+
+			var infobar = document.getElementsByClassName('infobar')[0];
+            infobar.insertBefore(divider, infobar.lastChild);
+            infobar.insertBefore(anchor, infobar.lastChild);
+
 		},
 		
 		expand_spoilers: function() {
@@ -517,9 +519,9 @@ var messageList = {
 			anchor.id = 'chromell_spoilers';
 			anchor.href = '##';
 			anchor.innerHTML = 'Expand Spoilers';
-			infobar.appendChild(divider);
-			infobar.appendChild(anchor);
-			anchor.addEventListener('click', messageList.spoilers.find);		
+            infobar.insertBefore(divider, infobar.lastChild);
+            infobar.insertBefore(anchor, infobar.lastChild);
+			anchor.addEventListener('click', messageList.spoilers.find);
 		}
 	},
 	
@@ -3929,7 +3931,7 @@ var messageList = {
 			}
 		}
 	},
-	
+
 	/**
 	 *  The main loop for this script - called after DOMContentLoaded has fired (or immediately if DOM is ready)
 	 *  Applies various types of DOM modifications to the message list, adds listeners for ChromeLL features, etc
@@ -3937,7 +3939,7 @@ var messageList = {
 	
 	applyDomModifications: function(pm) {
 		this.scrapeTags();
-		
+
 		if (this.config.embed_tweets) {
 			this.twitter.injectWidgets();
 		}
