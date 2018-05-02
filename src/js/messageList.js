@@ -3943,6 +3943,9 @@ var messageList = {
             if (messageTop.querySelector('a').href === profileUrl) {
                 let links = new Array(...messageTop.querySelectorAll('a'));
                 let quoteButton = links.filter(a => !!a.innerHTML.match(/^Quote/))[0];
+                if (!quoteButton) {
+                	continue;
+				}
                 let editUrl = quoteButton.href.replace(/quote=/, 'id=');
                 let divider = document.createElement('span');
                 let editLink = document.createElement('a');
