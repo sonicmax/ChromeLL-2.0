@@ -451,8 +451,9 @@ var messageList = {
 				var divider = document.createTextNode(" | ");
 				anchor.href = '/imagemap.php?' + topicNumber + currentPage;
 				anchor.innerHTML = 'Imagemap';
-				infobar.appendChild(divider);
-				infobar.appendChild(anchor);
+
+                infobar.insertBefore(divider, infobar.lastChild);
+                infobar.insertBefore(anchor, infobar.lastChild);
 			}
 		},
 		
@@ -503,10 +504,12 @@ var messageList = {
 				anchor.href = window.location.href.replace(me, '');
 				anchor.innerHTML = 'Unfilter Me';
 			}
-			
-			var infobar = document.getElementsByClassName('infobar')[0];				
-			infobar.appendChild(divider);
-			infobar.appendChild(anchor);
+
+
+			var infobar = document.getElementsByClassName('infobar')[0];
+            infobar.insertBefore(divider, infobar.lastChild);
+            infobar.insertBefore(anchor, infobar.lastChild);
+
 		},
 		
 		expand_spoilers: function() {
@@ -517,9 +520,9 @@ var messageList = {
 			anchor.id = 'chromell_spoilers';
 			anchor.href = '##';
 			anchor.innerHTML = 'Expand Spoilers';
-			infobar.appendChild(divider);
-			infobar.appendChild(anchor);
-			anchor.addEventListener('click', messageList.spoilers.find);		
+            infobar.insertBefore(divider, infobar.lastChild);
+            infobar.insertBefore(anchor, infobar.lastChild);
+			anchor.addEventListener('click', messageList.spoilers.find);
 		}
 	},
 	
@@ -3929,15 +3932,45 @@ var messageList = {
 			}
 		}
 	},
-	
-	/**
+
+    /**
+	 * Links on your posts to jump right to the Message Edit page
+     */
+    appendQuickEditLinks: function () {
+        let profileUrl = document.querySelector('.userbar a').href;
+
+        for (let messageTop of document.querySelectorAll('.message-top')) {
+            if (messageTop.querySelector('a').href === profileUrl) {
+                let links = new Array(...messageTop.querySelectorAll('a'));
+                let quoteButton = links.filter(a => !!a.innerHTML.match(/^Quote/))[0];
+                if (!quoteButton) {
+                	continue;
+				}
+                let editUrl = quoteButton.href.replace(/quote=/, 'id=');
+                let divider = document.createElement('span');
+                let editLink = document.createElement('a');
+                divider.innerHTML = ' | ';
+                editLink.innerHTML = 'Edit';
+                editLink.href = editUrl;
+                messageTop.insertBefore(editLink, quoteButton);
+                messageTop.insertBefore(divider, quoteButton);
+            }
+        }
+    },
+
+
+    /**
 	 *  The main loop for this script - called after DOMContentLoaded has fired (or immediately if DOM is ready)
 	 *  Applies various types of DOM modifications to the message list, adds listeners for ChromeLL features, etc
 	 */
 	
 	applyDomModifications: function(pm) {
 		this.scrapeTags();
-		
+
+		if (this.config.quick_edit) {
+			this.appendQuickEditLinks();
+		}
+
 		if (this.config.embed_tweets) {
 			this.twitter.injectWidgets();
 		}

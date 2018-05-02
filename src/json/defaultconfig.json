@@ -56,7 +56,7 @@
 	"embed_gfycat":true,
 	"embed_imgur":true,
 	"embed_gfycat_thumbs":false,
-	"embed_tweets":true,
+	"embed_tweets":false,
 	"hide_nws_tweets":true,
 	"hide_tweet_media": false,
 	"dark_tweets": false,
@@ -134,5 +134,6 @@
 	"microsoft_sam": true,
 	"seasonal_css": true,
 	"last_clean":0,
-	"last_saved":0
+	"last_saved":0,
+	"quick_edit": true
 }
